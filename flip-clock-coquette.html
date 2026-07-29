@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flip Clock — Coquette</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+
+  .flip-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    flex-wrap: nowrap;
+  }
+
+  .flip-card {
+    background: #F5D9DC;
+    border-radius: 20px;
+    padding: 1.3rem 1.1rem 1rem;
+    text-align: center;
+    flex: 1;
+    max-width: 140px;
+    box-sizing: border-box;
+  }
+
+  .flip-inner {
+    background: #FFF8F3;
+    border-radius: 12px;
+    padding: 0.6rem 0.3rem;
+    position: relative;
+  }
+
+  .flip-inner::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 8%;
+    right: 8%;
+    height: 1px;
+    background: #E8CDD3;
+  }
+
+  .flip-value {
+    font-size: clamp(28px, 8vw, 36px);
+    color: #2A2020;
+    position: relative;
+  }
+
+  .flip-label {
+    font-size: 11px;
+    color: #7B2D3E;
+    letter-spacing: 0.12em;
+    margin-top: 0.6rem;
+  }
+
+  .flip-divider {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .flip-divider svg {
+    fill: currentColor;
+  }
+</style>
+</head>
+<body>
+
+  <div class="flip-wrap">
+    <div class="flip-card">
+      <div class="flip-inner">
+        <div class="flip-value" id="flip-hour">--</div>
+      </div>
+      <div class="flip-label" id="flip-period">--</div>
+    </div>
+
+    <div class="flip-divider">
+      <svg viewBox="0 0 24 24" width="11" height="11" style="color:#B95239;"><path d="M12 21s-7.5-4.6-10-9.2C.3 8.4 2 4.5 6 4.5c2.1 0 3.6 1.1 4.5 2.4.9-1.3 2.4-2.4 4.5-2.4 4 0 5.7 3.9 4 7.3C19.5 16.4 12 21 12 21z"/></svg>
+      <svg viewBox="0 0 24 24" width="9" height="9" style="color:#C77B8A;"><path d="M12 21s-7.5-4.6-10-9.2C.3 8.4 2 4.5 6 4.5c2.1 0 3.6 1.1 4.5 2.4.9-1.3 2.4-2.4 4.5-2.4 4 0 5.7 3.9 4 7.3C19.5 16.4 12 21 12 21z"/></svg>
+    </div>
+
+    <div class="flip-card">
+      <div class="flip-inner">
+        <div class="flip-value" id="flip-minute">--</div>
+      </div>
+      <div class="flip-label" id="flip-day">---</div>
+    </div>
+  </div>
+
+  <script>
+    function updateFlipClock() {
+      var now = new Date();
+      var h = now.getHours();
+      var m = now.getMinutes();
+      var period = h >= 12 ? 'PM' : 'AM';
+      var h12 = h % 12;
+      if (h12 === 0) h12 = 12;
+      var mStr = m < 10 ? '0' + m : '' + m;
+
+      var days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+
+      document.getElementById('flip-hour').textContent = h12;
+      document.getElementById('flip-minute').textContent = mStr;
+      document.getElementById('flip-period').textContent = period;
+      document.getElementById('flip-day').textContent = days[now.getDay()];
+    }
+
+    updateFlipClock();
+    setInterval(updateFlipClock, 15000);
+  </script>
+
+</body>
+</html>
