@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moon Tracker — Dollette</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+
+  .moon-card {
+    background: #FCEFF1;
+    border-radius: 20px;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .moon-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 1rem;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #B98A96;
+  }
+
+  .moon-label svg {
+    width: 12px;
+    height: 12px;
+    fill: #B98A96;
+  }
+
+  .moon-inner {
+    background: #FFFDFC;
+    border-radius: 14px;
+    padding: 1.5rem 1rem;
+  }
+
+  .moon-icon-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.9rem;
+  }
+
+  .moon-icon {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: #F3E4E7;
+    box-shadow: 0 0 0 1px #E8CDD3 inset;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .moon-shadow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: #B98A96;
+  }
+
+  .moon-phase-name {
+    font-size: 20px;
+    color: #3A2E2E;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .moon-illumination {
+    font-size: 12px;
+    color: #D6A6AE;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .moon-day {
+    font-size: 12px;
+    color: #D6A6AE;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .moon-date {
+    font-size: 13px;
+    color: #B98A96;
+    font-style: italic;
+    margin-top: 0.9rem;
+  }
+</style>
+</head>
+<body>
+
+  <div class="moon-card">
+    <div class="moon-label">
+      <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.2C.3 8.4 2 4.5 6 4.5c2.1 0 3.6 1.1 4.5 2.4.9-1.3 2.4-2.4 4.5-2.4 4 0 5.7 3.9 4 7.3C19.5 16.4 12 21 12 21z"/></svg>
+      <span>moon tracker</span>
+      <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.2C.3 8.4 2 4.5 6 4.5c2.1 0 3.6 1.1 4.5 2.4.9-1.3 2.4-2.4 4.5-2.4 4 0 5.7 3.9 4 7.3C19.5 16.4 12 21 12 21z"/></svg>
+    </div>
+
+    <div class="moon-inner">
+      <div class="moon-icon-wrap">
+        <div class="moon-icon">
+          <div class="moon-shadow" id="moon-shadow"></div>
+        </div>
+      </div>
+
+      <div class="moon-phase-name" id="moon-phase-name">loading...</div>
+      <div class="moon-illumination" id="moon-illumination">--% illuminated</div>
+      <div class="moon-day" id="moon-day">day --</div>
+    </div>
+
+    <div class="moon-date" id="moon-date">loading...</div>
+  </div>
+
+  <script>
+    function updateMoonTracker() {
+      var synodicMonth = 29.53058867;
+      var knownNewMoon = Date.UTC(2000, 0, 6, 18, 14, 0);
+      var now = new Date();
+      var diffDays = (now.getTime() - knownNewMoon) / 86400000;
+      var phaseDays = ((diffDays % synodicMonth) + synodicMonth) % synodicMonth;
+      var p = phaseDays / synodicMonth;
+
+      var illumination = (1 - Math.cos(2 * Math.PI * p)) / 2;
+      var illumPercent = Math.round(illumination * 100);
+      var dayOfCycle = Math.floor(phaseDays) + 1;
+
+      var phaseName;
+      if (p < 0.0625 || p >= 0.9375) phaseName = 'New Moon';
+      else if (p < 0.1875) phaseName = 'Waxing Crescent';
+      else if (p < 0.3125) phaseName = 'First Quarter';
+      else if (p < 0.4375) phaseName = 'Waxing Gibbous';
+      else if (p < 0.5625) phaseName = 'Full Moon';
+      else if (p < 0.6875) phaseName = 'Waning Gibbous';
+      else if (p < 0.8125) phaseName = 'Last Quarter';
+      else phaseName = 'Waning Crescent';
+
+      var size = 84;
+      var sign = p < 0.5 ? -1 : 1;
+      var offset = sign * illumination * size;
+
+      var shadow = document.getElementById('moon-shadow');
+      shadow.style.left = offset + 'px';
+
+      document.getElementById('moon-phase-name').textContent = phaseName;
+      document.getElementById('moon-illumination').textContent = illumPercent + '% illuminated';
+      document.getElementById('moon-day').textContent = 'day ' + dayOfCycle;
+
+      var days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+      var months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+      document.getElementById('moon-date').textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()];
+    }
+
+    updateMoonTracker();
+    setInterval(updateMoonTracker, 1000 * 60 * 30);
+  </script>
+
+</body>
+</html>
