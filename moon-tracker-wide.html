@@ -37,18 +37,19 @@
   .panel {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 22px;
     background: var(--card);
     border-radius: 22px;
-    padding: 16px 26px 16px 16px;
+    padding: 28px 32px;
     box-shadow: 0 1px 0 rgba(30,26,25,0.04), 0 8px 20px -14px rgba(30,26,25,0.25);
   }
 
   .face {
     flex: 0 0 auto;
+    width: 72px;
+    height: 72px;
     background: #2A211E;
     border-radius: 16px;
-    padding: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -100,7 +101,7 @@
 
   <div class="panel">
     <div class="face">
-      <svg id="moon-svg" width="72" height="72" viewBox="0 0 104 104">
+      <svg id="moon-svg" width="52" height="52" viewBox="0 0 104 104">
         <circle cx="52" cy="52" r="46" fill="#2A211E"/>
         <path id="light-path" fill="#FDFBF8"/>
         <circle cx="52" cy="52" r="46" fill="none" stroke="#FDFBF8" stroke-width="1" opacity="0.18"/>
