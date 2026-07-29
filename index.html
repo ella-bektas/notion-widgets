@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Clock</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: transparent;
+    --card: #F3E0D2;
+    --face: #FDFBF8;
+    --ink: #1E1A19;
+    --secondary: #4C3A3A;
+    --terracotta: #D88A6B;
+    --rust: #B95239;
+    --sage: #7C8A6E;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    height: 100%;
+  }
+
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .widget {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 28px 32px;
+  }
+
+  .panel {
+    position: relative;
+    background: var(--card);
+    border-radius: 22px;
+    padding: 18px 26px 16px;
+    min-width: 110px;
+    text-align: center;
+    box-shadow: 0 1px 0 rgba(30,26,25,0.04), 0 8px 20px -14px rgba(30,26,25,0.25);
+  }
+
+  /* fold seam, split-flap reference */
+  .panel::after {
+    content: "";
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    top: 50%;
+    height: 1px;
+    background: rgba(30,26,25,0.08);
+  }
+
+  .face {
+    position: relative;
+    background: var(--face);
+    border-radius: 12px;
+    padding: 10px 6px 4px;
+    font-family: 'Instrument Serif', serif;
+    font-size: 58px;
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: 1px;
+    transition: opacity 0.25s ease;
+  }
+
+  .face.tick { animation: settle 0.28s ease; }
+  @keyframes settle {
+    0%   { transform: translateY(-3px); opacity: 0.4; }
+    100% { transform: translateY(0);    opacity: 1; }
+  }
+
+  .label {
+    margin-top: 10px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--secondary);
+    text-transform: uppercase;
+  }
+
+  .divider {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .divider .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--terracotta);
+    opacity: 0.9;
+    animation: breathe 2s ease-in-out infinite;
+  }
+
+  .divider .dot:nth-child(2) { animation-delay: 1s; background: var(--sage); }
+
+  @keyframes breathe {
+    0%, 100% { opacity: 0.35; transform: scale(0.85); }
+    50%      { opacity: 1;    transform: scale(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .face.tick { animation: none; }
+    .divider .dot { animation: none; opacity: 0.7; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="widget">
+    <div class="panel">
+      <div class="face" id="hour">--</div>
+      <div class="label" id="meridiem">--</div>
+    </div>
+
+    <div class="divider">
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="panel">
+      <div class="face" id="minute">--</div>
+      <div class="label" id="weekday">---</div>
+    </div>
+  </div>
+
+<script>
+  const hourEl = document.getElementById('hour');
+  const minuteEl = document.getElementById('minute');
+  const meridiemEl = document.getElementById('meridiem');
+  const weekdayEl = document.getElementById('weekday');
+  const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+
+  let lastHour = null;
+  let lastMinute = null;
+
+  function tick() {
+    const now = new Date();
+    let h = now.getHours();
+    const m = now.getMinutes();
+    const meridiem = h >= 12 ? 'PM' : 'AM';
+    h = h % 12;
+    if (h === 0) h = 12;
+
+    const hStr = String(h).padStart(2, '0');
+    const mStr = String(m).padStart(2, '0');
+
+    if (hStr !== lastHour) {
+      hourEl.textContent = hStr;
+      hourEl.classList.remove('tick');
+      void hourEl.offsetWidth;
+      hourEl.classList.add('tick');
+      lastHour = hStr;
+    }
+
+    if (mStr !== lastMinute) {
+      minuteEl.textContent = mStr;
+      minuteEl.classList.remove('tick');
+      void minuteEl.offsetWidth;
+      minuteEl.classList.add('tick');
+      lastMinute = mStr;
+    }
+
+    meridiemEl.textContent = meridiem;
+    weekdayEl.textContent = days[now.getDay()];
+  }
+
+  tick();
+  setInterval(tick, 1000);
+</script>
+
+</body>
+</html>
