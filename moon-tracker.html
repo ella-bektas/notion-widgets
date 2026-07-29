@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Moon Phase</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: transparent;
+    --card: #F3E0D2;
+    --face: #FDFBF8;
+    --ink: #1E1A19;
+    --secondary: #4C3A3A;
+    --terracotta: #D88A6B;
+    --rust: #B95239;
+    --sage: #7C8A6E;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    height: 100%;
+  }
+
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .panel {
+    background: var(--card);
+    border-radius: 22px;
+    padding: 22px 30px 20px;
+    text-align: center;
+    box-shadow: 0 1px 0 rgba(30,26,25,0.04), 0 8px 20px -14px rgba(30,26,25,0.25);
+    min-width: 168px;
+  }
+
+  .face {
+    background: #2A211E;
+    border-radius: 16px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .phase-name {
+    margin-top: 14px;
+    font-family: 'Instrument Serif', serif;
+    font-size: 24px;
+    color: var(--ink);
+    letter-spacing: 0.5px;
+  }
+
+  .meta {
+    margin-top: 4px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 1.6px;
+    color: var(--secondary);
+    text-transform: uppercase;
+  }
+
+  .dot-row {
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .dot-row span {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--secondary);
+    opacity: 0.18;
+  }
+
+  .dot-row span.active {
+    background: var(--terracotta);
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+
+  <div class="panel">
+    <div class="face">
+      <svg id="moon-svg" width="104" height="104" viewBox="0 0 104 104">
+        <circle cx="52" cy="52" r="46" fill="#2A211E"/>
+        <path id="light-path" fill="#FDFBF8"/>
+        <circle cx="52" cy="52" r="46" fill="none" stroke="#FDFBF8" stroke-width="1" opacity="0.18"/>
+      </svg>
+    </div>
+    <div class="phase-name" id="phase-name">--</div>
+    <div class="meta" id="phase-meta">-- illuminated · day --</div>
+    <div class="dot-row" id="dot-row"></div>
+  </div>
+
+<script>
+  const SYNODIC_MONTH = 29.53058867;
+  // Known new moon reference: 6 Jan 2000, 18:14 UTC
+  const REFERENCE_NEW_MOON = Date.UTC(2000, 0, 6, 18, 14, 0);
+
+  function getMoonPhase(date) {
+    const daysSince = (date.getTime() - REFERENCE_NEW_MOON) / 86400000;
+    let phase = (daysSince % SYNODIC_MONTH) / SYNODIC_MONTH;
+    if (phase < 0) phase += 1;
+    return phase;
+  }
+
+  function phaseName(phase) {
+    if (phase < 0.03 || phase > 0.97) return 'New Moon';
+    if (phase < 0.22) return 'Waxing Crescent';
+    if (phase < 0.28) return 'First Quarter';
+    if (phase < 0.47) return 'Waxing Gibbous';
+    if (phase < 0.53) return 'Full Moon';
+    if (phase < 0.72) return 'Waning Gibbous';
+    if (phase < 0.78) return 'Last Quarter';
+    return 'Waning Crescent';
+  }
+
+  function buildMoonPath(r, phase) {
+    const cx = 52, cy = 52;
+    const theta = 2 * Math.PI * phase;
+    const rx = Math.abs(r * Math.cos(theta));
+    const sweep = Math.cos(theta) >= 0 ? 0 : 1;
+    const top = `${cx},${cy - r}`;
+    const bottom = `${cx},${cy + r}`;
+    return `M ${top} A ${r} ${r} 0 0 1 ${bottom} A ${rx} ${r} 0 0 ${sweep} ${top} Z`;
+  }
+
+  function render() {
+    const now = new Date();
+    const phase = getMoonPhase(now);
+    const illumination = Math.round((1 - Math.cos(2 * Math.PI * phase)) / 2 * 100);
+    const dayOfCycle = Math.floor(phase * SYNODIC_MONTH) + 1;
+
+    document.getElementById('light-path').setAttribute('d', buildMoonPath(46, phase));
+    document.getElementById('phase-name').textContent = phaseName(phase);
+    document.getElementById('phase-meta').textContent =
+      `${illumination}% illuminated · day ${dayOfCycle}`;
+
+    const dotRow = document.getElementById('dot-row');
+    dotRow.innerHTML = '';
+    const totalDots = 8;
+    const activeDot = Math.round(phase * totalDots) % totalDots;
+    for (let i = 0; i < totalDots; i++) {
+      const d = document.createElement('span');
+      if (i === activeDot) d.classList.add('active');
+      dotRow.appendChild(d);
+    }
+  }
+
+  render();
+  // Recheck once an hour, phase barely shifts minute to minute
+  setInterval(render, 60 * 60 * 1000);
+</script>
+
+</body>
+</html>
