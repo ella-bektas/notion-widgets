@@ -1,0 +1,98 @@
+<h2 class="sr-only">Dollette-themed study timer with adjustable minutes, start, pause, and reset controls</h2>
+<div style="max-width: 360px; margin: 0 auto; background: #FFF9FB; border: 1px solid #F5C6D6; border-radius: 20px; padding: 2rem 1.5rem; text-align: center; font-family: var(--font-sans);">
+  <p style="font-family: 'Playfair Display', var(--font-voice); font-style: italic; font-size: 20px; color: #C97E97; margin: 0 0 1.25rem;">study time <i class="ti ti-heart" style="font-size:16px; color:#E8A5BB;" aria-hidden="true"></i></p>
+
+  <div id="display" style="font-size: 52px; font-weight: 500; color: #3A2E30; margin-bottom: 1.25rem; letter-spacing: 1px;">25:00</div>
+
+  <div style="display: flex; align-items: center; gap: 10px; justify-content: center; margin-bottom: 1.5rem;">
+    <label for="minutes" style="font-size: 13px; color: #C97E97;">minutes</label>
+    <input type="range" id="minutes" min="1" max="90" value="25" step="1" style="flex: 1; max-width: 160px; accent-color: #E8A5BB;" />
+    <span id="minutes-out" style="font-size: 13px; font-weight: 500; color: #C97E97; min-width: 20px;">25</span>
+  </div>
+
+  <div style="display: flex; gap: 10px; justify-content: center;">
+    <button id="start-btn" style="background: #FBE4EC; border: 1px solid #E8A5BB; color: #C97E97; border-radius: 999px; padding: 8px 20px; font-size: 14px; font-weight: 500; cursor: pointer;"><i class="ti ti-player-play" style="font-size:15px; vertical-align:-2px; margin-right:4px;" aria-hidden="true"></i>start</button>
+    <button id="pause-btn" style="background: #FFF9FB; border: 1px solid #E8A5BB; color: #C97E97; border-radius: 999px; padding: 8px 20px; font-size: 14px; font-weight: 500; cursor: pointer;"><i class="ti ti-player-pause" style="font-size:15px; vertical-align:-2px; margin-right:4px;" aria-hidden="true"></i>pause</button>
+    <button id="reset-btn" style="background: #FFF9FB; border: 1px solid #E8A5BB; color: #C97E97; border-radius: 999px; padding: 8px 20px; font-size: 14px; font-weight: 500; cursor: pointer;"><i class="ti ti-refresh" style="font-size:15px; vertical-align:-2px; margin-right:4px;" aria-hidden="true"></i>reset</button>
+  </div>
+
+  <p id="status" style="font-size: 12px; color: #E8A5BB; margin: 1rem 0 0;">ready when you are ♡</p>
+</div>
+
+<script>
+(function() {
+  var minutesInput = document.getElementById('minutes');
+  var minutesOut = document.getElementById('minutes-out');
+  var display = document.getElementById('display');
+  var status = document.getElementById('status');
+  var startBtn = document.getElementById('start-btn');
+  var pauseBtn = document.getElementById('pause-btn');
+  var resetBtn = document.getElementById('reset-btn');
+
+  var totalSeconds = parseInt(minutesInput.value, 10) * 60;
+  var remaining = totalSeconds;
+  var timerId = null;
+
+  function formatTime(s) {
+    var m = Math.floor(s / 60);
+    var sec = s % 60;
+    return (m < 10 ? '0' + m : m) + ':' + (sec < 10 ? '0' + sec : sec);
+  }
+
+  function updateDisplay() {
+    display.textContent = formatTime(remaining);
+  }
+
+  minutesInput.addEventListener('input', function() {
+    minutesOut.textContent = minutesInput.value;
+    if (!timerId) {
+      totalSeconds = parseInt(minutesInput.value, 10) * 60;
+      remaining = totalSeconds;
+      updateDisplay();
+      status.textContent = 'ready when you are ♡';
+    }
+  });
+
+  startBtn.addEventListener('click', function() {
+    if (timerId) return;
+    if (remaining <= 0) {
+      totalSeconds = parseInt(minutesInput.value, 10) * 60;
+      remaining = totalSeconds;
+    }
+    status.textContent = 'focus mode, you\'ve got this ♡';
+    timerId = setInterval(function() {
+      remaining -= 1;
+      if (remaining <= 0) {
+        remaining = 0;
+        updateDisplay();
+        clearInterval(timerId);
+        timerId = null;
+        status.textContent = 'time\'s up, well done ♡';
+        return;
+      }
+      updateDisplay();
+    }, 1000);
+  });
+
+  pauseBtn.addEventListener('click', function() {
+    if (timerId) {
+      clearInterval(timerId);
+      timerId = null;
+      status.textContent = 'paused, take a breath ♡';
+    }
+  });
+
+  resetBtn.addEventListener('click', function() {
+    if (timerId) {
+      clearInterval(timerId);
+      timerId = null;
+    }
+    totalSeconds = parseInt(minutesInput.value, 10) * 60;
+    remaining = totalSeconds;
+    updateDisplay();
+    status.textContent = 'ready when you are ♡';
+  });
+
+  updateDisplay();
+})();
+</script>
