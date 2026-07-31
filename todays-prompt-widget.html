@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Today's Prompt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #FBE7EC;
+    --cream: #FFF9F6;
+    --burgundy: #7B2D3E;
+    --rose: #E7A8BC;
+    --ink: #2A2020;
+    --border: #F3D3DE;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+  }
+
+  body {
+    font-family: 'Cormorant Garamond', serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 300px;
+    background: var(--cream);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 24px rgba(123, 45, 62, 0.10);
+    overflow: hidden;
+  }
+
+  .card-header {
+    background: var(--rose);
+    padding: 10px 16px;
+    text-align: center;
+  }
+
+  .card-header span {
+    color: var(--cream);
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+  }
+
+  .card-body {
+    padding: 26px 22px 20px;
+    text-align: center;
+  }
+
+  .prompt-frame {
+    position: relative;
+    min-height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .quote-mark {
+    font-family: Georgia, serif;
+    font-size: 34px;
+    color: var(--rose);
+    opacity: 0.3;
+    position: absolute;
+    top: -6px;
+    left: -2px;
+    line-height: 1;
+  }
+
+  .prompt-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 19px;
+    line-height: 1.4;
+    color: var(--ink);
+    margin: 0;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .prompt-text.fade {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  .divider {
+    margin: 0 22px;
+    border-top: 1.5px dashed var(--rose);
+    opacity: 0.5;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+    background: var(--cream);
+    transition: background 0.15s ease;
+  }
+
+  .card-footer:hover {
+    background: var(--blush);
+  }
+
+  .card-footer:active {
+    background: var(--blush);
+  }
+
+  .card-footer svg {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-footer.spinning svg {
+    transform: rotate(360deg);
+  }
+
+  .card-footer span {
+    color: var(--rose);
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 12.5px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-header">
+    <span>Today's Prompt</span>
+  </div>
+
+  <div class="card-body">
+    <div class="prompt-frame">
+      <span class="quote-mark">&ldquo;</span>
+      <p class="prompt-text" id="promptText">Loading&hellip;</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="card-footer" id="refreshBtn" role="button" aria-label="Get a new prompt" title="Get a new prompt">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 4V9H4.58152M20 20V15H19.4185M4.58152 9C5.53236 6.0533 8.34285 4 11.6667 4C15.8877 4 19.3333 7.30761 19.4185 11.5M19.4185 15C18.4677 17.9467 15.6572 20 12.3333 20C8.11228 20 4.66667 16.6924 4.58152 12.5" stroke="#C77B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>Refresh</span>
+  </div>
+</div>
+
+<script>
+  const prompts = [
+    "What made today feel soft, even for a moment?",
+    "What's a thought you keep circling back to lately?",
+    "What would you tell yourself this time last year?",
+    "What are you quietly proud of this week?",
+    "What's something small that brought you comfort today?",
+    "What's a feeling you've been avoiding sitting with?",
+    "Who made you feel most like yourself recently?",
+    "What does your ideal slow morning look like?",
+    "What's a habit you'd like to gently let go of?",
+    "What's something you're looking forward to, even a little?",
+    "What did you need to hear today?",
+    "What's weighing on you that you haven't said out loud?",
+    "What's a memory that still makes you smile?",
+    "What would you do with an entirely free afternoon?",
+    "What's one thing you did today just for you?",
+    "What's a boundary you're proud you held onto?",
+    "What does rest actually look like for you right now?",
+    "What's something you've outgrown but still hold onto?",
+    "What's a compliment you'd give yourself today?",
+    "What's been taking up too much space in your head?",
+    "What's a small win from this week worth noting?",
+    "What do you wish someone understood about you right now?",
+    "What's a fear you're slowly becoming less afraid of?",
+    "What does your space say about how you're feeling?",
+    "What's something you're learning to be patient with?",
+    "What conversation do you keep replaying?",
+    "What's a version of yourself you're growing into?",
+    "What's something you did today that your future self will thank you for?",
+    "What's currently bringing you a sense of calm?",
+    "What's a question you wish someone would ask you?",
+    "What would today have looked like if you'd been kinder to yourself?",
+    "What's something you're ready to close the chapter on?",
+    "What's a small joy you almost overlooked today?",
+    "What does your gut keep telling you that you're ignoring?",
+    "What's something you needed permission to do, and are you ready to give it to yourself?",
+    "What's one thing you'd change about how today went?",
+    "What's a story you tell yourself that might not be true anymore?",
+    "What's something you're grateful you said no to?",
+    "What would make tomorrow feel a little lighter?",
+    "What's a part of your routine that quietly makes you happy?"
+  ];
+
+  const promptText = document.getElementById('promptText');
+  const refreshBtn = document.getElementById('refreshBtn');
+
+  function getRandomPrompt(excludeText) {
+    let choice;
+    do {
+      choice = prompts[Math.floor(Math.random() * prompts.length)];
+    } while (choice === excludeText && prompts.length > 1);
+    return choice;
+  }
+
+  function setPrompt() {
+    refreshBtn.classList.add('spinning');
+    promptText.classList.add('fade');
+
+    setTimeout(() => {
+      promptText.textContent = getRandomPrompt(promptText.textContent);
+      promptText.classList.remove('fade');
+    }, 200);
+
+    setTimeout(() => {
+      refreshBtn.classList.remove('spinning');
+    }, 500);
+  }
+
+  refreshBtn.addEventListener('click', setPrompt);
+
+  promptText.textContent = getRandomPrompt();
+</script>
+
+</body>
+</html>
